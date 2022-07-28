@@ -1,6 +1,18 @@
 /* VARIABLES GENERALES */
-const miForm = document.getElementById('miForm');
-const error = document.getElementById('error');
+const miForm = document.querySelector('#miForm');
+const error = document.querySelector('#error');
+
+/* BTN CALCULAR */
+const btnCalcular = document.querySelector('#btnCalcular'); 
+btnCalcular.addEventListener('click', () => {  
+    calcular()
+});
+
+/* BTN RESET */
+const btnReset = document.querySelector('#btnReset');
+btnReset.addEventListener('click',() => {
+    changeCss();
+});
 
 /* ARRAY DE TIPOS DE CONSUMO X CATEGORIA DE AUTOMOVIL */
 const arrayConsumo = [
@@ -68,7 +80,7 @@ for (let i = 0; i < arrayConsumo.length; i++) {
 // FUNCION PARA CARGAR UN ARRAY DENTRO DE UN "SELECT"
 function cargar() {
     let listaConsumo = optionConsumos; //array de consumos filtrados
-    let select = document.getElementById("tipoConsumo"); //Seleccionamos el select
+    let select = document.querySelector('#tipoConsumo'); //Seleccionamos el select
     
     for(let i=0; i < optionConsumos.length; i++){ 
         let option = document.createElement("option"); //Creamos la opcion
@@ -76,20 +88,26 @@ function cargar() {
         select.appendChild(option); //Metemos la opción en el select
     }
 }
-cargar();
+
+cargar(); // EJECUCION DE LA FUNCION AL CARGAR LA PAGINA
 
 // FUNCION QUE CALCULA EL COSTO DEL VIAJE
 function calcularConsumo(){
+
     // KILOMETROS
-    const UIkm = document.getElementById('kilometros');
+    const UIkm = document.querySelector('#kilometros');
     const km = parseFloat(UIkm.value);
 
     // PRECIO COMBUSTIBLE
-    const precioCombustible = document.getElementById('precioCombustible').value;
+    const precioCombustible = document.querySelector('#precioCombustible').value;
 
     // CONSUMOS
-    const tipoConsumo = document.getElementById('tipoConsumo').value;
+    const tipoConsumo = document.querySelector('#tipoConsumo').value;
     const consumo = arrayConsumo.find((el)=> el.tipo === tipoConsumo);
+
+    // IDA O VUELTA
+    const ida = document.querySelector('#ida');
+    const idaVuelta = document.querySelector('#idaVuelta');
 
     console.log(consumo.consumo);
     console.log(km);
@@ -97,8 +115,17 @@ function calcularConsumo(){
 
     cantidadLitros = (km / 100 * consumo.consumo).toFixed(2); 
     costoViajeIda = cantidadLitros * precioCombustible;
-    document.getElementById('resultado').innerHTML = (new Intl.NumberFormat('es-ES' , { style: 'currency', currency: 'ARS' })).format(costoViajeIda);
+    costoIdaVuelta = costoViajeIda * 2;
+
+    // COMPRUEBA SI EL USUARIO QUIERE CALCULAR IDA O VUELTA Y LO MUESTRA
+    if (ida.checked === true){
+        document.querySelector('#resultado').innerHTML = (new Intl.NumberFormat('es-ES' , { style: 'currency', currency: 'ARS' })).format(costoViajeIda);
+    } else{
+        document.querySelector('#resultado').innerHTML = (new Intl.NumberFormat('es-ES' , { style: 'currency', currency: 'ARS' })).format(costoIdaVuelta);
+    }
+    
 }
+
 
 /* FUNCIÓN CALCULAR */
 function calcular(){
@@ -116,7 +143,7 @@ function calcular(){
 
     if(miForm.kilometros.value==0){
         error.style.display='flex';
-        document.getElementById('error').innerHTML = "Ingrese los kilometros a recorrer";
+        document.querySelector('#error').innerHTML = "Ingrese los kilometros a recorrer";
         miForm.kilometros.focus();
         return false;
     } else{
@@ -133,16 +160,15 @@ function calcular(){
     }
 
     calcularConsumo()
-   /* Muestra RESULTADOS  & DA VUELTA LA CARD */
-    let elemFirst = document.querySelector(".card__inner"); 
-    elemFirst.classList.toggle('is-flipped');
 
+   /* Muestra RESULTADOS  & DA VUELTA LA CARD */
+    let elemFirst = document.querySelector('.card__inner'); 
+    elemFirst.classList.toggle('is-flipped');
     }
 
 /* RESETEA CALCULADORA & DA VUELTA LA CARD */
 function changeCss() {
-    let elemFirst = document.querySelector(".card__inner");
-    document.getElementById("miForm").reset();
+    const elemFirst = document.querySelector('.card__inner');
+    document.querySelector('#miForm').reset();
     elemFirst.classList.toggle('is-flipped');
     }
-

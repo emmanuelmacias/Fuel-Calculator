@@ -5,6 +5,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Calculadora de Gasto de Combustible | Emmanuel Macías | V 1.0</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+	<script  defer src="https://maps.googleapis.com/maps/api/js?libraries=places&language=en&key=AIzaSyCFpiNapfA702snQPbTameV66dDu94MlnA"  type="text/javascript"></script>
+
 	<link rel="stylesheet" href="./asset/css/main.css" />
 </head>
 <body>
@@ -14,57 +16,94 @@
 		<div class="row">
 			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 				<div class="card">
-				<div class="card__inner">
-					<div class="card__face card__face--front">
-						<form id="miForm">
+					<div class="card__inner">
+						<div class="card__face card__face--front">
+							<form id="miForm">
 
-						<div class="form-group simInput">
-							<div class="input-group">
-								<span class="input-group-text">KM</span>
-								<input type="number" class="form-control" id="kilometros" placeholder="Ingresa Kilometros" required>
-							</div>
+<!-- INPUT FUTUROS PARA CUANDO HAGA FUNCIONAR LA API DE MAPS 	
+								<div class="form-group simInput">
+									<label for="from" class="control-label"><i class="far fa-dot-circle"></i></label>
+									<div class="input-group">
+										<input type="text" id="from" placeholder="Origen" class="form-control">
+									</div>
+								</div>
+
+								<div class="form-group simInput">
+									<label for="to" class="control-label"><i class="fas fa-map-marker-alt"></i></label>
+									<div class="input-group">
+										<input type="text" id="to" placeholder="Destino" class="form-control">
+									</div>	
+								</div> -->
+
+								<div class="form-group simInput">
+									<div class="input-group">
+										<span class="input-group-text">KM</span>
+										<input type="number" class="form-control" id="kilometros" placeholder="Ingresa Kilometros" required>
+									</div>
+								</div>
+
+								<div class="form-group simInput">
+									<div class="input-group">
+										<span class="input-group-text">$</span>
+										<input type="number" class="form-control" id="precioCombustible" placeholder="Precio Combustible por Litro" required>
+									</div>
+								</div>
+
+								<div class="form-group simConsumo">
+									<select class="form-select" aria-label="Default select example" id="tipoConsumo" required>
+									</select>
+								</div>
+								
+								<div class="form-check">
+									<input class="form-check-input" type="radio" name="flexRadioDefault" id="ida" checked>
+									<label class="form-check-label" for="flexRadioDefault1">
+									Solo Ida
+									</label>
+								</div>
+								<div class="form-check">
+									<input class="form-check-input" type="radio" name="flexRadioDefault" id="idaVuelta">
+									<label class="form-check-label" for="flexRadioDefault2">
+									Ida y Vuelta
+									</label>
+								</div>
+
+								<div class="boton">
+									<button type="button" id="btnCalcular" class="btn btn-dark btn-block">Calcular</button>
+								</div>	
+
+								<div id="error"></div>
+							</form>				
 						</div>
 
-						<div class="form-group simInput">
-							<div class="input-group">
-								<span class="input-group-text">$</span>
-								<input type="number" class="form-control" id="precioCombustible" placeholder="Precio Combustible por Litro" required>
-							</div>
-						</div>
-
-						<div class="form-group simConsumo">
-							<select class="form-select" aria-label="Default select example" id="tipoConsumo" required>
-							</select>
-						</div>
-						
-						<div class="boton">
-							<button type="button" class="btn btn-dark btn-block" onclick="calcular()">Calcular</button>
+						<div class="card__face card__face--back">
+							<div class="card__content">
+								<div class="card__header">
+									<img src="#" alt="" width="250px">
+									<h2>Resultados</h2>
+								</div>
+								<div class="card__body">
+									<p>TOTAL GASTO DE VIAJE: <b>$</b> <span id="resultado"></span>	
+									<div class="boton">
+										<button type="button" id="btnReset" class="btn btn-dark btn-block">Calcular Otro</button>
+									</div>
+								</div>
+							</div>			  
 						</div>	
-
-						<div id="error"></div>
-
-						</form>				
-					</div>
-
-			<div class="card__face card__face--back">
-				<div class="card__content">
-					<div class="card__header">
-						<img src="#" alt="" width="250px">
-						<h2>Resultados</h2>
-					</div>
-					<div class="card__body">
-							<p>TOTAL GASTO DE VIAJE: <b>$</b> <span id="resultado"></span>	
-
-					<div class="boton">
-					<button type="button" class="btn btn-dark btn-block" onclick="changeCss()">Calcular Otro</button>
-					</div>
-
+					</div>	
 				</div>
-				</div>			  
-			</div>			
-		</div>	
+			</div>
+		</div>
 	</div>
 </section>
+<div class="container-fluid">
+	<div id="googleMap">
+
+	</div>
+	<div id="output">
+
+	</div>
+</div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>	
 	<script src="./asset/js/app.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js" integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js" integrity="sha384-ODmDIVzN+pFdexxHEHFBQH3/9/vQ9uori45z4JjnFsRydbmQbmL5t1tQ0culUzyK" crossorigin="anonymous"></script>
