@@ -1,3 +1,32 @@
+// ALERT CON INPUT - EL USUARIO DEBE INGRESAR NOMBRE 
+if (localStorage.getItem('nombre') === null) {
+    Swal
+    .fire({
+        title: "Tu nombre",
+        input: "text",
+        showCancelButton: false,
+        confirmButtonText: "Guardar",
+        inputValidator: nombre => {
+            // Si el valor es válido, debes regresar undefined. Si no, una cadena
+            if (!nombre) {
+                return "Por favor escribe tu nombre";
+            } else {
+                return undefined;
+            }
+        }
+    })
+    .then(resultado => {
+        if (resultado.value) {
+            let nombre = resultado.value;
+            localStorage.setItem('nombre', JSON.stringify(nombre));
+            console.log("Hola, " + nombre);
+        }
+    });
+    } else {
+        // SE LEVANTA EL NOMBRE DESDE EL LOCALSTORAGE
+        document.querySelector('#nombre').innerHTML = JSON.parse(localStorage.getItem('nombre')); 
+        }
+
 /* VARIABLES GENERALES */
 const miForm = document.querySelector('#miForm');
 const error = document.querySelector('#error');
@@ -13,6 +42,16 @@ const btnReset = document.querySelector('#btnReset');
 btnReset.addEventListener('click',() => {
     changeCss();
 });
+
+
+/* RESETEA CALCULADORA & DA VUELTA LA CARD */
+function changeCss() {
+    const elemFirst = document.querySelector('.card__inner');
+    document.querySelector('#miForm').reset();
+    elemFirst.classList.toggle('is-flipped');
+    
+
+}
 
 /* ARRAY DE TIPOS DE CONSUMO X CATEGORIA DE AUTOMOVIL */
 const arrayConsumo = [
@@ -83,7 +122,7 @@ function cargar() {
     let select = document.querySelector('#tipoConsumo'); //Seleccionamos el select
     
     for(let i=0; i < optionConsumos.length; i++){ 
-        let option = document.createElement("option"); //Creamos la opcion
+        let option = document.createElement('option'); //Creamos la opcion
         option.innerHTML = listaConsumo[i]; //Metemos el texto en la opción
         select.appendChild(option); //Metemos la opción en el select
     }
@@ -91,12 +130,69 @@ function cargar() {
 
 cargar(); // EJECUCION DE LA FUNCION AL CARGAR LA PAGINA
 
-// FUNCION QUE CALCULA EL COSTO DEL VIAJE
-function calcularConsumo(){
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+//set map options
+const myLatLng = { 
+    lat: 38.3460, 
+    lng: -0.4907 };
+const mapOptions = {
+    center: myLatLng,
+    zoom: 7,
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+
+};
+
+//SE CREA EL MAPA
+const map = new google.maps.Map(document.querySelector('#googleMap'), mapOptions);
+
+//SE CREA directionsService PARA USAR EL METODO ROUTE  Y SE OBTIENE EL RESULTADO PARA EL REQUEST
+const directionsService = new google.maps.DirectionsService();
+
+//SE CREA DirectionsRenderer PARA MOSTRAR EL RESULTADO DEL REQUEST
+const directionsDisplay = new google.maps.DirectionsRenderer();
+
+//SE ENZLAZA EL RESULTADO AL MAPA
+directionsDisplay.setMap(map);
+
+
+
+//SE DEFINE LA FUNCION CALCULAR RUTA
+function calcRoute() {
+    //SE CREA LA SOLICITUD
+    const request = {
+        origin: document.querySelector('#from').value,
+        destination: document.querySelector('#to').value,
+        travelMode: google.maps.TravelMode.DRIVING,
+        unitSystem: google.maps.UnitSystem.METRIC
+    }
+
+    //PASAR SOLICITUD AL METODO DE ROUTE
+    directionsService.route(request, function (result, status) {
+        if (status == google.maps.DirectionsStatus.OK) {
+
+            //OBTENER DISTANCIA Y TIEMPO
+            document.querySelector('#desde').innerHTML = document.querySelector('#from').value;
+            document.querySelector('#hasta').innerHTML = document.querySelector('#to').value;
+            document.querySelector('#distancia').innerHTML = result.routes[0].legs[0].distance.text;
+            document.querySelector('#duracion').innerHTML = result.routes[0].legs[0].duration.text;
+
+            //SE MUESTRA RUTA
+            directionsDisplay.setDirections(result);
+            
+        } else {
+            //SE BORRA LA RUTA DEL MAPA
+            directionsDisplay.setDirections({ routes: [] });
+            //SE CENTRA EL MAPA EN LA VARIABLE SETEADA
+            map.setCenter(myLatLng);
+        }
+
+/*     localStorage.setItem('from', JSON.stringify(document.getElementById("from").value));
+    localStorage.setItem('to', JSON.stringify(document.getElementById("to").value)); */
 
     // KILOMETROS
-    const UIkm = document.querySelector('#kilometros');
-    const km = parseFloat(UIkm.value);
+    const km = result.routes[0].legs[0].distance.value / 1000;
 
     // PRECIO COMBUSTIBLE
     const precioCombustible = document.querySelector('#precioCombustible').value;
@@ -107,15 +203,15 @@ function calcularConsumo(){
 
     // IDA O VUELTA
     const ida = document.querySelector('#ida');
-    const idaVuelta = document.querySelector('#idaVuelta');
-
-    console.log(consumo.consumo);
-    console.log(km);
-    console.log(precioCombustible); 
+    const idaVuelta = document.querySelector('#idaVuelta'); // NO SE ESTA USANDO
 
     cantidadLitros = (km / 100 * consumo.consumo).toFixed(2); 
     costoViajeIda = cantidadLitros * precioCombustible;
     costoIdaVuelta = costoViajeIda * 2;
+
+/*     localStorage.setItem('costoIda', JSON.stringify((new Intl.NumberFormat('es-ES' , { style: 'currency', currency: 'ARS' })).format(costoViajeIda)));
+    localStorage.setItem('costoIdaVuelta', JSON.stringify((new Intl.NumberFormat('es-ES' , { style: 'currency', currency: 'ARS' })).format(costoIdaVuelta)));
+    localStorage.setItem('idaVueltaChecked', JSON.stringify(ida.checked)); */
 
     // COMPRUEBA SI EL USUARIO QUIERE CALCULAR IDA O VUELTA Y LO MUESTRA
     if (ida.checked === true){
@@ -123,8 +219,21 @@ function calcularConsumo(){
     } else{
         document.querySelector('#resultado').innerHTML = (new Intl.NumberFormat('es-ES' , { style: 'currency', currency: 'ARS' })).format(costoIdaVuelta);
     }
-    
+    });
 }
+
+//OBJETO DE AUTOCOMPLETE PARA TODOS LOS INPUT
+const options = {
+    types: ['(cities)']
+}
+
+const input1 = document.querySelector('#from');
+const autocomplete1 = new google.maps.places.Autocomplete(input1, options);
+
+const input2 = document.querySelector('#to');
+const autocomplete2 = new google.maps.places.Autocomplete(input2, options);
+
+
 
 
 /* FUNCIÓN CALCULAR */
@@ -132,19 +241,19 @@ function calcular(){
 
 /* VALIDA LOS CAMPOS VACIOS */ 
     
-/*     if(miForm.tipoConsumo.value==0){
+    if(document.querySelector('#from').value==""){
         error.style.display='flex';
-        document.getElementById('error').innerHTML = "Seleccione un tipo automovil";
-        miForm.tipoConsumo.focus();
+        document.querySelector('#error').innerHTML = "Seleccione un punto de Origen";
+        document.querySelector('#from').focus();
         return false;
     } else{
         error.style.display='none';
-    } */
+    }
 
-    if(miForm.kilometros.value==0){
+    if(document.querySelector('#to').value==""){
         error.style.display='flex';
-        document.querySelector('#error').innerHTML = "Ingrese los kilometros a recorrer";
-        miForm.kilometros.focus();
+        document.querySelector('#error').innerHTML = "Seleccione un Destino";
+        document.querySelector('#to').focus();
         return false;
     } else{
         error.style.display='none';
@@ -152,23 +261,24 @@ function calcular(){
 
     if(miForm.precioCombustible.value==0){
         error.style.display='flex';
-        document.getElementById('error').innerHTML = "Ingrese precio de Combustible";
+        document.querySelector('#error').innerHTML = "Ingrese precio de Combustible";
         miForm.precioCombustible.focus();
         return false;
     } else{
         error.style.display='none';
     }
 
-    calcularConsumo()
+    calcRoute() // SE EJECUTA LA FUNCION
+
+//SE RECUPERA EL NOMBRE DESDE EL LOCALSTORAGE Y LO MUESTRA EN RESULTADOS
+    document.querySelector('#nombre').innerHTML = JSON.parse(localStorage.getItem('nombre'));
 
    /* Muestra RESULTADOS  & DA VUELTA LA CARD */
-    let elemFirst = document.querySelector('.card__inner'); 
+    const elemFirst = document.querySelector('.card__inner'); 
     elemFirst.classList.toggle('is-flipped');
-    }
+}
 
-/* RESETEA CALCULADORA & DA VUELTA LA CARD */
-function changeCss() {
-    const elemFirst = document.querySelector('.card__inner');
-    document.querySelector('#miForm').reset();
-    elemFirst.classList.toggle('is-flipped');
-    }
+
+
+
+

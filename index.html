@@ -5,8 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Calculadora de Gasto de Combustible | Emmanuel Macías | V 1.0</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
-	<script  defer src="https://maps.googleapis.com/maps/api/js?libraries=places&language=en&key=AIzaSyCFpiNapfA702snQPbTameV66dDu94MlnA"  type="text/javascript"></script>
-
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=places&language=en&key=AIzaSyDSERuskfTgF0RS0k6R6BRbwQ15tfwkk0M"  type="text/javascript"></script>
 	<link rel="stylesheet" href="./asset/css/main.css" />
 </head>
 <body>
@@ -17,10 +16,15 @@
 			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 				<div class="card">
 					<div class="card__inner">
+						
 						<div class="card__face card__face--front">
+							<div class="card__content">
+								<div class="card__header">
+									<h2>CALCULA EL GASTO DE TU VIAJE</h2>
+									<h5>Esta app te va a ayudar a calcular no solo el gasto de tu viaje sino la mejor ruta.</h5>
+								</div>
 							<form id="miForm">
-
-<!-- INPUT FUTUROS PARA CUANDO HAGA FUNCIONAR LA API DE MAPS 	
+								
 								<div class="form-group simInput">
 									<label for="from" class="control-label"><i class="far fa-dot-circle"></i></label>
 									<div class="input-group">
@@ -33,13 +37,6 @@
 									<div class="input-group">
 										<input type="text" id="to" placeholder="Destino" class="form-control">
 									</div>	
-								</div> -->
-
-								<div class="form-group simInput">
-									<div class="input-group">
-										<span class="input-group-text">KM</span>
-										<input type="number" class="form-control" id="kilometros" placeholder="Ingresa Kilometros" required>
-									</div>
 								</div>
 
 								<div class="form-group simInput">
@@ -74,36 +71,49 @@
 								<div id="error"></div>
 							</form>				
 						</div>
+					</div>
 
 						<div class="card__face card__face--back">
 							<div class="card__content">
+
 								<div class="card__header">
-									<img src="#" alt="" width="250px">
-									<h2>Resultados</h2>
+									<h2>Hola <span id="nombre"></span></h2>
+									<h5>Estos son los resultados de tu viaje</h5>
 								</div>
+
+								<div class="container-fluid">
+									<div id="googleMap">
+								
+									</div>
+									<div id="output">
+								
+									</div>
+								</div>
+
+
 								<div class="card__body">
+									
+									<p>DESDE: <b><span id="desde"></span></b>	
+									<p>HASTA: <b><span id="hasta"></span></b>
+									<p>DISTANCIA: <b><span id="distancia"></span></b>
+									<p>DURACIÓN: <b><span id="duracion"></span></b>
 									<p>TOTAL GASTO DE VIAJE: <b>$</b> <span id="resultado"></span>	
+									
 									<div class="boton">
 										<button type="button" id="btnReset" class="btn btn-dark btn-block">Calcular Otro</button>
 									</div>
 								</div>
 							</div>			  
-						</div>	
+						</div>
 					</div>	
 				</div>
 			</div>
 		</div>
 	</div>
 </section>
-<div class="container-fluid">
-	<div id="googleMap">
-
-	</div>
-	<div id="output">
-
-	</div>
-</div>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>	
+<!-- 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>	
+ -->
+	<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script src="./asset/js/app.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js" integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js" integrity="sha384-ODmDIVzN+pFdexxHEHFBQH3/9/vQ9uori45z4JjnFsRydbmQbmL5t1tQ0culUzyK" crossorigin="anonymous"></script>

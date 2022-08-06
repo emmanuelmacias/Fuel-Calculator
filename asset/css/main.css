@@ -27,7 +27,7 @@ body {
   display: flex;
   background-color: transparent;
   margin: 55px auto 0;
-  width: 400px;
+  width: 1000px;
   height: 600px;
   perspective: 1000px;
   border: 0;
@@ -48,8 +48,8 @@ body {
 
 .card__face {
   position: absolute;
-  width: 100%;
-  height: 100%;
+  width: 1000px;
+  height: 850px;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   overflow: hidden;
@@ -97,7 +97,7 @@ body {
   bottom: 0;
   background-image: linear-gradient(to bottom left, var(--primary) 10%, var(--secondary) 115%);
   z-index: -1;
-  border-radius: 0px 0px 50% 0px;
+
 }
 
 /* .pp {
@@ -126,6 +126,10 @@ body {
   text-align: center;
 }
 
+.card__header h5 {
+  color: #FFF;
+  text-align: center;
+}
 .card__body {
   text-align: center;
   padding: 50px 10px;
@@ -166,6 +170,7 @@ body {
 
 .form-group.simInput{
   padding-bottom: 20px;
+  display: flex;
 }
 .btn-dark{
   background-color: var(--gray-blue);
@@ -186,7 +191,6 @@ body {
 
 .simulador-background form{
   margin: 1rem;
-  width: 90%;
 }
 
 
@@ -199,4 +203,21 @@ body {
   display: flex;
   justify-content: center;
   padding-top: 10px;
+}
+
+/*map*/
+#googleMap {
+  width: 100%;
+  height: 400px;
+}
+
+/*output box*/
+#output {
+  text-align: center;
+  font-size: 2em;
+  margin: 20px auto;
+}
+
+#mode {
+  color: black;
 }
