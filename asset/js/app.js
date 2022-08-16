@@ -180,16 +180,22 @@ function calcRoute() {
 
             //SE MUESTRA RUTA
             directionsDisplay.setDirections(result);
+
+            /* Muestra RESULTADOS  & DA VUELTA LA CARD */
+            const elemFirst = document.querySelector('.card__inner'); 
+            elemFirst.classList.toggle('is-flipped');
             
         } else {
-            //SE BORRA LA RUTA DEL MAPA
-            directionsDisplay.setDirections({ routes: [] });
-            //SE CENTRA EL MAPA EN LA VARIABLE SETEADA
-            map.setCenter(myLatLng);
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'No se encontró una ruta terrestre',
+                footer: '<a href="https://www.despegar.com.ar/">¿Querés volar a tu destino?</a>'
+            })
         }
 
-/*     localStorage.setItem('from', JSON.stringify(document.getElementById("from").value));
-    localStorage.setItem('to', JSON.stringify(document.getElementById("to").value)); */
+//SE RECUPERA EL NOMBRE DESDE EL LOCALSTORAGE Y LO MUESTRA EN RESULTADOS
+    document.querySelector('#nombre').innerHTML = JSON.parse(localStorage.getItem('nombre'));
 
     // KILOMETROS
     const km = result.routes[0].legs[0].distance.value / 1000;
@@ -208,10 +214,6 @@ function calcRoute() {
     cantidadLitros = (km / 100 * consumo.consumo).toFixed(2); 
     costoViajeIda = cantidadLitros * precioCombustible;
     costoIdaVuelta = costoViajeIda * 2;
-
-/*     localStorage.setItem('costoIda', JSON.stringify((new Intl.NumberFormat('es-ES' , { style: 'currency', currency: 'ARS' })).format(costoViajeIda)));
-    localStorage.setItem('costoIdaVuelta', JSON.stringify((new Intl.NumberFormat('es-ES' , { style: 'currency', currency: 'ARS' })).format(costoIdaVuelta)));
-    localStorage.setItem('idaVueltaChecked', JSON.stringify(ida.checked)); */
 
     // COMPRUEBA SI EL USUARIO QUIERE CALCULAR IDA O VUELTA Y LO MUESTRA
     if (ida.checked === true){
@@ -232,8 +234,6 @@ const autocomplete1 = new google.maps.places.Autocomplete(input1, options);
 
 const input2 = document.querySelector('#to');
 const autocomplete2 = new google.maps.places.Autocomplete(input2, options);
-
-
 
 
 /* FUNCIÓN CALCULAR */
@@ -269,16 +269,16 @@ function calcular(){
     }
 
     calcRoute() // SE EJECUTA LA FUNCION
-
-//SE RECUPERA EL NOMBRE DESDE EL LOCALSTORAGE Y LO MUESTRA EN RESULTADOS
-    document.querySelector('#nombre').innerHTML = JSON.parse(localStorage.getItem('nombre'));
-
-   /* Muestra RESULTADOS  & DA VUELTA LA CARD */
-    const elemFirst = document.querySelector('.card__inner'); 
-    elemFirst.classList.toggle('is-flipped');
 }
 
 
+/* FALTA: 
 
+- PONER PRECIOS DE COMBUSTIBLES AUTOMATICOS CON POSIBILIDAD DE QUE EL USUARIO LO CAMBIE
+- COLOCAR BOTONES CON ICONOS PARA LAS CLASES DE CONSUMO / AUTOMOVIL
+- SI EL USUARIO SELECCIONA "IDA Y VUELTA" CUANDO MUESTRA LOS RESULTADOS. MOSTRARLE UN TEXTO QUE LO INDIQUE
+- SI EL USUARIO SELECCIONA "IDA Y VUELTA" SUMAR KILOMETRAJES
+
+*/
 
 
