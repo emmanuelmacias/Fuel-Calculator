@@ -1,3 +1,62 @@
+// SELECCION DE DIV SPINNER
+const loader = document.querySelector("#loading");
+
+// SELECCION DE DIV CARD
+const cardBody = document.querySelector(".simulador-background");
+
+// showing loading
+function displayLoading() {
+    loader.style.display="flex"
+    // to stop loading after some time
+    setTimeout(() => {
+        loader.style.display="none"
+        cardBody.style.display="flex"
+    }, 3000);
+}
+
+/* ACCEDO AL ARRAY DE TIPOS DE CONSUMO X CATEGORIA DE AUTOMOVIL / METODO FETCH */
+async function consumo () {
+    cardBody.style.display="none"
+    let url = '../../db_consumo.json';
+    try{
+        displayLoading()
+        let res = await fetch(url);
+        return await res.json();
+    }catch(error){
+        console.log(error); 
+    }
+}
+
+
+// FUNCION PARA CARGAR UN ARRAY DENTRO DE UN "SELECT"
+async function cargar() {
+    let optionConsumos = [];
+    let arrayConsumo = await consumo();
+
+    // EJECUCION DE CODIGO PARA PUSHEAR ELEMENTOS DEL ARRAY CONSUMO DENTRO DEL SELECT DEL FORM
+    for (let i = 0; i < arrayConsumo.length; i++) { 
+        // Se recorre el array con el bucle for y así accedo a los object que tiene
+        for (let key in arrayConsumo[i]) { 
+        // Pongo una variable en el for, que accederá a las key (propiedades) de los objetos con 'in' más el objeto al que se quiere acceder 
+            if (arrayConsumo[i].hasOwnProperty(key) && key === "tipo") {
+            // verificar si el objeto contiene esa propiedad con 'hasOwnProperty(valor)' y si la key es igual a tipo
+                optionConsumos.push(arrayConsumo[i][key]); // agregamos el id al (array)
+                }
+            }
+        }
+
+    let listaConsumo = optionConsumos; //array de consumos filtrados
+    let select = document.querySelector('#tipoConsumo'); //Seleccionamos el select
+    
+    for(let i=0; i < optionConsumos.length; i++){ 
+        let option = document.createElement('option'); //Creamos la opcion
+        option.innerHTML = listaConsumo[i]; //Metemos el texto en la opción
+        select.appendChild(option); //Metemos la opción en el select
+    }
+}
+
+cargar(); // EJECUCION DE LA FUNCION AL CARGAR LA PAGINA
+
 // ALERT CON INPUT - EL USUARIO DEBE INGRESAR NOMBRE 
 if (localStorage.getItem('nombre') === null) {
     Swal
@@ -6,12 +65,13 @@ if (localStorage.getItem('nombre') === null) {
         input: "text",
         showCancelButton: false,
         confirmButtonText: "Guardar",
+        allowOutsideClick: false, // PREVIENE Y BLOQUEA EL CLICK FUERA DEL ALERT
         inputValidator: nombre => {
             // Si el valor es válido, debes regresar undefined. Si no, una cadena
             if (!nombre) {
                 return "Por favor escribe tu nombre";
             } else {
-                return undefined;
+                return undefined;    
             }
         }
     })
@@ -20,12 +80,14 @@ if (localStorage.getItem('nombre') === null) {
             let nombre = resultado.value;
             localStorage.setItem('nombre', JSON.stringify(nombre));
             console.log("Hola, " + nombre);
+        } else {
+            return false;
         }
     });
     } else {
         // SE LEVANTA EL NOMBRE DESDE EL LOCALSTORAGE
         document.querySelector('#nombre').innerHTML = JSON.parse(localStorage.getItem('nombre')); 
-        }
+    }
 
 /* VARIABLES GENERALES */
 const miForm = document.querySelector('#miForm');
@@ -52,84 +114,6 @@ function changeCss() {
     
 
 }
-
-/* ARRAY DE TIPOS DE CONSUMO X CATEGORIA DE AUTOMOVIL */
-const arrayConsumo = [
-    {   
-        "tipo": "Utilitario",
-        "consumo": 7.8,
-    },
-
-    {   
-        "tipo": "Compacto",
-        "consumo": 7,
-    },
-
-    {   
-        "tipo": "Coupe",
-        "consumo": 11,
-    },
-
-    {   
-        "tipo": "Sedan",
-        "consumo": 7.5,
-    },
-
-    {   
-        "tipo": "SUV",
-        "consumo": 9.5,
-    },
-
-    {   
-        "tipo": "Familiar",
-        "consumo": 7.5,
-    },
-
-    {   
-        "tipo": "Pickup",
-        "consumo": 10,
-    },
-
-    {   
-        "tipo": "Monovolumen",
-        "consumo": 7.9,
-    },
-
-    {   
-        "tipo": "Furgon",
-        "consumo": 9,
-    },
-]
-
-// EJECUCION DE CODIGO PARA PUSHEAR ELEMENTOS DEL ARRAY CONSUMO DENTRO DEL SELECT DEL FORM
-
-let optionConsumos = [];
-
-for (let i = 0; i < arrayConsumo.length; i++) { 
-    // Se recorre el array con el bucle for y así accedo a los object que tiene
-    for (let key in arrayConsumo[i]) { 
-      // Pongo una variable en el for, que accederá a las key (propiedades) de los objetos con 'in' más el objeto al que se quiere acceder 
-        if (arrayConsumo[i].hasOwnProperty(key) && key === "tipo") {
-        // verificar si el objeto contiene esa propiedad con 'hasOwnProperty(valor)' y si la key es igual a tipo
-            optionConsumos.push(arrayConsumo[i][key]); // agregamos el id al (array)
-            }
-        }
-    }
-
-// FUNCION PARA CARGAR UN ARRAY DENTRO DE UN "SELECT"
-function cargar() {
-    let listaConsumo = optionConsumos; //array de consumos filtrados
-    let select = document.querySelector('#tipoConsumo'); //Seleccionamos el select
-    
-    for(let i=0; i < optionConsumos.length; i++){ 
-        let option = document.createElement('option'); //Creamos la opcion
-        option.innerHTML = listaConsumo[i]; //Metemos el texto en la opción
-        select.appendChild(option); //Metemos la opción en el select
-    }
-}
-
-cargar(); // EJECUCION DE LA FUNCION AL CARGAR LA PAGINA
-
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -193,8 +177,8 @@ function calcRoute() {
                 footer: '<a href="https://www.despegar.com.ar/">¿Querés volar a tu destino?</a>'
             })
         }
-
-//SE RECUPERA EL NOMBRE DESDE EL LOCALSTORAGE Y LO MUESTRA EN RESULTADOS
+        
+    //SE RECUPERA EL NOMBRE DESDE EL LOCALSTORAGE Y LO MUESTRA EN RESULTADOS
     document.querySelector('#nombre').innerHTML = JSON.parse(localStorage.getItem('nombre'));
 
     // KILOMETROS
@@ -206,15 +190,15 @@ function calcRoute() {
     // CONSUMOS
     const tipoConsumo = document.querySelector('#tipoConsumo').value;
     const consumo = arrayConsumo.find((el)=> el.tipo === tipoConsumo);
-
+    
     // IDA O VUELTA
     const ida = document.querySelector('#ida');
     const idaVuelta = document.querySelector('#idaVuelta'); // NO SE ESTA USANDO
-
+    
     cantidadLitros = (km / 100 * consumo.consumo).toFixed(2); 
     costoViajeIda = cantidadLitros * precioCombustible;
     costoIdaVuelta = costoViajeIda * 2;
-
+    
     // COMPRUEBA SI EL USUARIO QUIERE CALCULAR IDA O VUELTA Y LO MUESTRA
     if (ida.checked === true){
         document.querySelector('#resultado').innerHTML = (new Intl.NumberFormat('es-ES' , { style: 'currency', currency: 'ARS' })).format(costoViajeIda);
@@ -234,7 +218,6 @@ const autocomplete1 = new google.maps.places.Autocomplete(input1, options);
 
 const input2 = document.querySelector('#to');
 const autocomplete2 = new google.maps.places.Autocomplete(input2, options);
-
 
 /* FUNCIÓN CALCULAR */
 function calcular(){
@@ -270,7 +253,6 @@ function calcular(){
 
     calcRoute() // SE EJECUTA LA FUNCION
 }
-
 
 /* FALTA: 
 

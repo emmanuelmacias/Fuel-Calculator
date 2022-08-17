@@ -1,0 +1,46 @@
+[
+    {   
+        "tipo": "Utilitario",
+        "consumo": 7.8
+    },
+
+    {   
+        "tipo": "Compacto",
+        "consumo": 7
+    },
+
+    {   
+        "tipo": "Coupe",
+        "consumo": 11
+    },
+
+    {   
+        "tipo": "Sedan",
+        "consumo": 7.5
+    },
+
+    {   
+        "tipo": "SUV",
+        "consumo": 9.5
+    },
+
+    {   
+        "tipo": "Familiar",
+        "consumo": 7.5
+    },
+
+    {   
+        "tipo": "Pickup",
+        "consumo": 10
+    },
+
+    {   
+        "tipo": "Monovolumen",
+        "consumo": 7.9
+    },
+
+    {   
+        "tipo": "Furgon",
+        "consumo": 9
+    }
+]
