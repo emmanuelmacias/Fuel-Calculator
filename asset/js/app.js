@@ -17,7 +17,7 @@ function displayLoading() {
 /* ACCEDO AL ARRAY DE TIPOS DE CONSUMO X CATEGORIA DE AUTOMOVIL / METODO FETCH */
 async function consumo () {
     cardBody.style.display="none"
-    let url = '../../db_consumo.json';
+    let url = 'https://emmanuelmacias.github.io/Fuel-Calculator/db_consumo.json';
     try{
         displayLoading()
         let res = await fetch(url);
