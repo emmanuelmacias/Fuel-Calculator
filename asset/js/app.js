@@ -36,7 +36,7 @@ function obtenerJSON(url) {
 // FUNCION PARA CARGAR UN ARRAY DENTRO DE UN "SELECT"
 function cargar() {
 
-    obtenerJSON('https://emmanuelmacias.github.io/Fuel-Calculator/db_consumo.json')
+    obtenerJSON('db_consumo.json')
     .then((json) => {
     arrayConsumo = json
     console.log("el json de respuesta es:", json);
@@ -197,7 +197,7 @@ function calcRoute() {
     const precioCombustible = document.querySelector('#precioCombustible').value;
 
     // CONSUMOS
-    obtenerJSON('https://emmanuelmacias.github.io/Fuel-Calculator/db_consumo.json')
+    obtenerJSON('db_consumo.json')
     .then((json) => {
     arrayConsumo = json
     
