@@ -205,13 +205,13 @@ body {
   padding-top: 10px;
 }
 
-/*map*/
+/*MAP*/
 #googleMap {
   width: 100%;
   height: 400px;
 }
 
-/*output box*/
+/*OUTPUT BOX*/
 #output {
   text-align: center;
   font-size: 2em;
@@ -222,9 +222,16 @@ body {
   color: black;
 }
 
+/* IDA & VUELTA TEXT */
+#idaVueltaText {
+  color: #ffffff;
+  font-weight: 500;
+}
+
+
 /* SPINNER */
 .loading {
-  display: flex;
+  display: block;
   color: #ffffff;
   font-size: 20px;
   margin: 100px auto;

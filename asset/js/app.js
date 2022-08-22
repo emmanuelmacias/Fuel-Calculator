@@ -4,35 +4,44 @@ const loader = document.querySelector("#loading");
 // SELECCION DE DIV CARD
 const cardBody = document.querySelector(".simulador-background");
 
-// showing loading
+// FUNCION MUESTRA SPINNER
 function displayLoading() {
-    loader.style.display="flex"
-    // to stop loading after some time
+    loader.style.display="block"
+    cardBody.style.display="none"
+    // FRENA SPINNER DESPUES DE UN TIEMPO DETERMINADO
     setTimeout(() => {
         loader.style.display="none"
-        cardBody.style.display="flex"
+        cardBody.style.display="block"
     }, 3000);
 }
 
-/* ACCEDO AL ARRAY DE TIPOS DE CONSUMO X CATEGORIA DE AUTOMOVIL / METODO FETCH */
-async function consumo () {
-    cardBody.style.display="none"
-    let url = 'https://emmanuelmacias.github.io/Fuel-Calculator/db_consumo.json';
-    try{
-        displayLoading()
-        let res = await fetch(url);
-        return await res.json();
-    }catch(error){
-        console.log(error); 
+// FUNCION QUE TRAE EL JSON DE DATOS
+function obtenerJSON(url) {
+    return new Promise((resolve, reject) => {
+    fetch(url)
+        .then((response) => {
+        if (response.ok) {
+            displayLoading() 
+            return response.json();
+        }
+        reject(
+            "No hemos podido recuperar ese json. El código de respuesta del servidor es: " + response.status
+        );
+        })
+        .then((json) => resolve(json))
+        .catch((err) => reject(err));
+    });
     }
-}
-
 
 // FUNCION PARA CARGAR UN ARRAY DENTRO DE UN "SELECT"
-async function cargar() {
-    let optionConsumos = [];
-    let arrayConsumo = await consumo();
+function cargar() {
 
+    obtenerJSON('../../db_consumo.json')
+    .then((json) => {
+    arrayConsumo = json
+    console.log("el json de respuesta es:", json);
+
+    let optionConsumos = []
     // EJECUCION DE CODIGO PARA PUSHEAR ELEMENTOS DEL ARRAY CONSUMO DENTRO DEL SELECT DEL FORM
     for (let i = 0; i < arrayConsumo.length; i++) { 
         // Se recorre el array con el bucle for y así accedo a los object que tiene
@@ -53,9 +62,14 @@ async function cargar() {
         option.innerHTML = listaConsumo[i]; //Metemos el texto en la opción
         select.appendChild(option); //Metemos la opción en el select
     }
+    
+    })
+    .catch((err) => {
+    console.log("Error encontrado:", err);
+    });
 }
 
-cargar(); // EJECUCION DE LA FUNCION AL CARGAR LA PAGINA
+cargar() // SE CARGA LOS SELECT CON LAS OPCIONES DE CONSUMOS
 
 // ALERT CON INPUT - EL USUARIO DEBE INGRESAR NOMBRE 
 if (localStorage.getItem('nombre') === null) {
@@ -111,13 +125,11 @@ function changeCss() {
     const elemFirst = document.querySelector('.card__inner');
     document.querySelector('#miForm').reset();
     elemFirst.classList.toggle('is-flipped');
-    
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-//set map options
+//SETTINGS MAPS LAT - LONG & OPTIONS
 const myLatLng = { 
     lat: 38.3460, 
     lng: -0.4907 };
@@ -125,7 +137,6 @@ const mapOptions = {
     center: myLatLng,
     zoom: 7,
     mapTypeId: google.maps.MapTypeId.ROADMAP
-
 };
 
 //SE CREA EL MAPA
@@ -139,8 +150,6 @@ const directionsDisplay = new google.maps.DirectionsRenderer();
 
 //SE ENZLAZA EL RESULTADO AL MAPA
 directionsDisplay.setMap(map);
-
-
 
 //SE DEFINE LA FUNCION CALCULAR RUTA
 function calcRoute() {
@@ -156,11 +165,9 @@ function calcRoute() {
     directionsService.route(request, function (result, status) {
         if (status == google.maps.DirectionsStatus.OK) {
 
-            //OBTENER DISTANCIA Y TIEMPO
+            //IMPRIME ORIGEN Y DESTINO
             document.querySelector('#desde').innerHTML = document.querySelector('#from').value;
             document.querySelector('#hasta').innerHTML = document.querySelector('#to').value;
-            document.querySelector('#distancia').innerHTML = result.routes[0].legs[0].distance.text;
-            document.querySelector('#duracion').innerHTML = result.routes[0].legs[0].duration.text;
 
             //SE MUESTRA RUTA
             directionsDisplay.setDirections(result);
@@ -177,9 +184,11 @@ function calcRoute() {
                 footer: '<a href="https://www.despegar.com.ar/">¿Querés volar a tu destino?</a>'
             })
         }
-        
     //SE RECUPERA EL NOMBRE DESDE EL LOCALSTORAGE Y LO MUESTRA EN RESULTADOS
     document.querySelector('#nombre').innerHTML = JSON.parse(localStorage.getItem('nombre'));
+
+    // TIEMPO DE VIAJE
+    const tiempoViaje = result.routes[0].legs[0].duration.value / 60; // TRANFORMA DE SEGUNDOS A MINUTOS
 
     // KILOMETROS
     const km = result.routes[0].legs[0].distance.value / 1000;
@@ -188,7 +197,12 @@ function calcRoute() {
     const precioCombustible = document.querySelector('#precioCombustible').value;
 
     // CONSUMOS
+    obtenerJSON('../../db_consumo.json')
+    .then((json) => {
+    arrayConsumo = json
+    
     const tipoConsumo = document.querySelector('#tipoConsumo').value;
+    /* const consumosArray = arrayConsumo */
     const consumo = arrayConsumo.find((el)=> el.tipo === tipoConsumo);
     
     // IDA O VUELTA
@@ -202,9 +216,36 @@ function calcRoute() {
     // COMPRUEBA SI EL USUARIO QUIERE CALCULAR IDA O VUELTA Y LO MUESTRA
     if (ida.checked === true){
         document.querySelector('#resultado').innerHTML = (new Intl.NumberFormat('es-ES' , { style: 'currency', currency: 'ARS' })).format(costoViajeIda);
+        document.querySelector('#distancia').innerHTML = km.toFixed(1) + " KM";
+        document.querySelector('#idaVueltaText').innerHTML = "- SOLO DE IDA -"
+
+        // VALIDA TIEMPO Y MUESTRA HORAS O MINUTOS
+        if (tiempoViaje > 60){
+            const tiempoHora = tiempoViaje / 60
+            document.querySelector('#duracion').innerHTML = tiempoHora.toFixed(2)  + " Horas";
+        } else{
+            document.querySelector('#duracion').innerHTML = tiempoViaje.toFixed(2)  + " Minutos";
+        }
+        
     } else{
         document.querySelector('#resultado').innerHTML = (new Intl.NumberFormat('es-ES' , { style: 'currency', currency: 'ARS' })).format(costoIdaVuelta);
+        document.querySelector('#distancia').innerHTML = (km * 2).toFixed(1) + " KM";
+        document.querySelector('#idaVueltaText').innerHTML = "- IDA Y VUELTA -"
+
+        const tiempoViajeX2 = tiempoViaje * 2; // MULTIPLICA DURACION DEL VIAJE IDA Y VUELTA
+
+        // VALIDA TIEMPO Y MUESTRA HORAS O MINUTOS
+        if (tiempoViajeX2 > 60){
+            const tiempoHora = tiempoViajeX2 / 60
+            document.querySelector('#duracion').innerHTML = tiempoHora.toFixed(2) + " Horas";
+        } else{
+            document.querySelector('#duracion').innerHTML = tiempoViajeX2.toFixed(2) + " Minutos";
+        }
     }
+    });
+    })
+    .catch((err) => {
+    console.log("Error encontrado:", err);
     });
 }
 
@@ -222,7 +263,7 @@ const autocomplete2 = new google.maps.places.Autocomplete(input2, options);
 /* FUNCIÓN CALCULAR */
 function calcular(){
 
-/* VALIDA LOS CAMPOS VACIOS */ 
+    // VALIDA LOS CAMPOS VACIOS 
     
     if(document.querySelector('#from').value==""){
         error.style.display='flex';
@@ -258,8 +299,6 @@ function calcular(){
 
 - PONER PRECIOS DE COMBUSTIBLES AUTOMATICOS CON POSIBILIDAD DE QUE EL USUARIO LO CAMBIE
 - COLOCAR BOTONES CON ICONOS PARA LAS CLASES DE CONSUMO / AUTOMOVIL
-- SI EL USUARIO SELECCIONA "IDA Y VUELTA" CUANDO MUESTRA LOS RESULTADOS. MOSTRARLE UN TEXTO QUE LO INDIQUE
-- SI EL USUARIO SELECCIONA "IDA Y VUELTA" SUMAR KILOMETRAJES
 
 */
 
