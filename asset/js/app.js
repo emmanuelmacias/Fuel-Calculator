@@ -35,7 +35,6 @@ function obtenerJSON(url) {
 
 // FUNCION PARA CARGAR UN ARRAY DENTRO DE UN "SELECT"
 function cargar() {
-
     obtenerJSON('https://emmanuelmacias.github.io/Fuel-Calculator/db_consumo.json')
     .then((json) => {
     arrayConsumo = json
@@ -62,7 +61,7 @@ function cargar() {
         option.innerHTML = listaConsumo[i]; //Metemos el texto en la opción
         select.appendChild(option); //Metemos la opción en el select
     }
-    
+
     })
     .catch((err) => {
     console.log("Error encontrado:", err);
@@ -70,6 +69,7 @@ function cargar() {
 }
 
 cargar() // SE CARGA LOS SELECT CON LAS OPCIONES DE CONSUMOS
+
 
 // ALERT CON INPUT - EL USUARIO DEBE INGRESAR NOMBRE 
 if (localStorage.getItem('nombre') === null) {
@@ -129,13 +129,9 @@ function changeCss() {
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-//SETTINGS MAPS LAT - LONG & OPTIONS
-const myLatLng = { 
-    lat: 38.3460, 
-    lng: -0.4907 };
+//SETTINGS MAPS OPTIONS
 const mapOptions = {
-    center: myLatLng,
-    zoom: 7,
+    zoom: 6,
     mapTypeId: google.maps.MapTypeId.ROADMAP
 };
 
@@ -199,12 +195,12 @@ function calcRoute() {
     // CONSUMOS
     obtenerJSON('https://emmanuelmacias.github.io/Fuel-Calculator/db_consumo.json')
     .then((json) => {
-    arrayConsumo = json
-    
+    arrayConsumo = json;
+    console.log(arrayConsumo);
     const tipoConsumo = document.querySelector('#tipoConsumo').value;
     /* const consumosArray = arrayConsumo */
     const consumo = arrayConsumo.find((el)=> el.tipo === tipoConsumo);
-    
+    console.log(tipoConsumo);
     // IDA O VUELTA
     const ida = document.querySelector('#ida');
     const idaVuelta = document.querySelector('#idaVuelta'); // NO SE ESTA USANDO
@@ -294,12 +290,3 @@ function calcular(){
 
     calcRoute() // SE EJECUTA LA FUNCION
 }
-
-/* FALTA: 
-
-- PONER PRECIOS DE COMBUSTIBLES AUTOMATICOS CON POSIBILIDAD DE QUE EL USUARIO LO CAMBIE
-- COLOCAR BOTONES CON ICONOS PARA LAS CLASES DE CONSUMO / AUTOMOVIL
-
-*/
-
-
