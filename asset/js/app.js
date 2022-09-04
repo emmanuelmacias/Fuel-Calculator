@@ -288,5 +288,14 @@ function calcular(){
         error.style.display='none';
     }
 
+    if(miForm.tipoConsumo.value==0){
+        error.style.display='flex';
+        document.querySelector('#error').innerHTML = "Ingrese tipo de automóvil en el que viajará";
+        miForm.tipoConsumo.focus();
+        return false;
+    } else{
+        error.style.display='none';
+    }
+
     calcRoute() // SE EJECUTA LA FUNCION
 }
